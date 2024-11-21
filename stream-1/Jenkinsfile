@@ -1,0 +1,133 @@
+pipeline {
+    agent {label 'linux'}
+
+ tools {
+        jdk 'JDK-17'
+        gradle 'Gradle-8.4'
+        nodejs 'NodeJS_20.13.1'
+
+    }
+
+    stages {
+                
+        stage('Build User Service') {
+            steps {
+                dir('user-service') {
+                    echo 'Building User Service Module..'
+                    sh 'chmod +x ./gradlew'
+                    sh './gradlew clean build'
+                    }
+                
+            }
+        }
+         stage('Test User Service') {
+            steps {
+                dir('user-service') {
+                    echo 'Testing User Service Module..'
+                    sh './gradlew test'
+                    }
+                
+            }
+        }
+
+        stage('Build Recipe Service') {
+                    steps {
+                        dir('Recipe-service') {
+                            echo 'Building Recipe Service Module..'
+                            sh 'chmod +x ./gradlew'
+                            sh './gradlew clean build'
+                            }
+
+                    }
+
+                }
+                 stage('Test Recipe Service') {
+                    steps {
+                        dir('Recipe-service') {
+                            echo 'Testing User Service Module..'
+                            sh './gradlew test'
+                            }
+
+                    }
+                 }
+        stage('Build Api-Gateway Service') {
+                    steps {
+                        dir('api-gateway') {
+                            echo 'Building User Service Module..'
+                            sh 'chmod +x ./gradlew'
+                            sh './gradlew clean build'
+                            }
+
+                    }
+
+                }
+        stage('Build Service Registry Service') {
+                            steps {
+                                dir('service-registry') {
+                                    echo 'Building Service Registry Module..'
+                                    sh 'chmod +x ./gradlew'
+                                    sh './gradlew clean build'
+                                    }
+
+                            }
+
+                        }
+
+
+        stage('Build User Service QA') {
+            steps {
+                dir('user-service-qa') {
+                    echo 'Building User Service QA Module..'
+                    sh 'chmod +x ./gradlew'
+                    sh './gradlew clean build test'
+                    }
+                
+            }
+
+        }
+         stage('Building Recipe Platform UI') {
+            steps {
+                dir('recipe-platform-ui') {
+                    echo 'Building Recipe Plaform UI Module..'
+                    sh 'npm install'
+                    sh 'npm run build'                    
+                    }
+            }
+        }
+            
+            stage('Test Recipe Platform UI') {
+            steps {
+                dir('recipe-platform-ui') {
+                    echo 'Testing Admin Service UI Module..'
+                    sh 'npm run test'                     
+                    }
+                }
+            }
+
+        stage('SonarQube analysis') {
+            environment {
+                scannerHome = tool 'SonarQube Scanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarHyd') {
+                    sh '$scannerHome/bin/sonar-scanner'
+                }
+            }
+        }
+
+    }
+	
+	post {
+        always {
+            script {
+                timeout(time:10, unit:'MINUTES'){
+                // Quality gate check
+                    def qualityGateCheck = waitForQualityGate()
+                    if (qualityGateCheck.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qualityGateCheck.status}"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: user-service
+  config:
+    import: optional:
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_service?createDatabaseIfNotExist=true
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 19bcs2084@gmail.com
+    password: rckmzdacjerneird
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+rsa:
+  private-key: classpath:certs/private.pem
+  public-key: classpath:certs/public.pem
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,27 @@
+package com.epam.recipe.platform.dto.request;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import static com.epam.recipe.platform.constants.UserConstant.*;
+
+@Getter
+@Setter
+public class ResetPasswordRequestDTO {
+
+    @Email(message = EMAIL_VALID_MESSAGE)
+    @NotBlank(message = EMAIL_NON_NULL_MESSAGE)
+    @Schema(description = "Email address of the user", example = "john.doe@example.com")
+    String email;
+
+    @NotBlank(message = PASSWORD_NON_NULL_MESSAGE)
+    @Pattern(regexp = PASSWORD_VALIDATION_EXPRESSION,
+            message = PASSWORD_VALID_MESSAGE )
+    @Schema(description = "Password of the user", example = "P@ssw0rd")
+    String password;
+}

@@ -1,0 +1,16 @@
+package com.epam.recipe.platform.exceptionhandler.exception;
+
+import org.springframework.http.HttpStatus;
+
+
+public class EmailException extends RuntimeException {
+    private final HttpStatus status;
+    public EmailException(String message, HttpStatus status) {
+        super(message);
+        this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+}
